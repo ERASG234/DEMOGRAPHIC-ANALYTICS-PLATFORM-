@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erasmus Gwidza - Advanced Demographic Analytics Platform</title>
+    <title> - Advanced Demographic Analytics Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -127,8 +127,8 @@
                         <i class="fas fa-chart-pie text-4xl text-white"></i>
                     </div>
                     <h1 class="text-4xl font-bold mb-2">Erasmus Gwidza</h1>
-                    <p class="text-xl text-blue-100 mb-2">Master of Science in Population Informatics & Analytics</p>
-                    <p class="text-lg text-blue-200 mb-4">University of Zimbabwe • Advanced Demographic Analytics Platform</p>
+                    <p class="text-xl text-blue-100 mb-2">Population Informatics & Analytics</p>
+                    <p class="text-lg text-blue-200 mb-4">• Advanced Demographic Analytics Platform</p>
                     <div class="flex justify-center items-center space-x-6 text-sm">
                         <div class="flex items-center">
                             <i class="fas fa-users mr-2"></i>
@@ -210,25 +210,197 @@
                     <p class="text-lg text-gray-600 dark:text-gray-400">Start with fundamental demographic calculations and rates</p>
                 </div>
 
-                <!-- Simple Calculators Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Crude Birth Rate -->
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <i class="fas fa-baby text-accent mr-2"></i>Crude Birth Rate
-                        </h3>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Births</label>
-                                <input type="number" id="totalBirths" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
-                                <input type="number" id="totalPopBirth" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
-                            </div>
-                            <button onclick="calculateCBR()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate CBR</button>
-                            <div id="cbrResult" class="text-center font-bold text-accent text-lg"></div>
-                        </div>
+              <!-- Simple Calculators Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Crude Birth Rate -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-baby text-accent mr-2"></i>Crude Birth Rate
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Births</label>
+                <input type="number" id="totalBirths" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
+                <input type="number" id="totalPopBirth" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateCBR()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate CBR</button>
+            <div id="cbrResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+
+    <!-- Net Migration Rate -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-plane text-accent mr-2"></i>Net Migration Rate
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Immigrants</label>
+                <input type="number" id="totalImmigrants" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Emigrants</label>
+                <input type="number" id="totalEmigrants" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
+                <input type="number" id="totalPopMigration" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateNMR()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate NMR</button>
+            <div id="nmrResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+
+    <!-- Mortality Rate -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-skull-crossbones text-accent mr-2"></i>Mortality Rate
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Deaths</label>
+                <input type="number" id="totalDeaths" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
+                <input type="number" id="totalPopMortality" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateMortalityRate()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate Mortality Rate</button>
+            <div id="mortalityResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+
+    <!-- SMAAM -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-chart-line text-accent mr-2"></i>SMAAM
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age-Specific Death Rate</label>
+                <input type="number" id="ageSpecificDeathRate" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Population in Age Group</label>
+                <input type="number" id="populationAgeGroup" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateSMAAM()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate SMAAM</button>
+            <div id="smaamResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+
+    <!-- Gompertz Model -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-calculator text-accent mr-2"></i>Gompertz Model
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Population</label>
+                <input type="number" id="initialPopulation" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Growth Rate</label>
+                <input type="number" id="growthRate" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateGompertz()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate Gompertz</button>
+            <div id="gompertzResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+
+    <!-- Sullivan Method -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-user-clock text-accent mr-2"></i>Sullivan Method
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Life Expectancy</label>
+                <input type="number" id="lifeExpectancy" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Years Lived with Disability</label>
+                <input type="number" id="yearsLivedDisability" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateSullivan()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate Sullivan</button>
+            <div id="sullivanResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+
+    <!-- Fecundity -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class="fas fa-female text-accent mr-2"></i>Fecundity
+        </h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Live Births</label>
+                <input type="number" id="totalLiveBirths" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Women of Childbearing Age</label>
+                <input type="number" id="totalWomenChildbearing" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+            </div>
+            <button onclick="calculateFecundity()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate Fecundity</button>
+            <div id="fecundityResult" class="text-center font-bold text-accent text-lg"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateCBR() {
+        const totalBirths = parseFloat(document.getElementById('totalBirths').value);
+        const totalPopBirth = parseFloat(document.getElementById('totalPopBirth').value);
+        const cbr = (totalBirths / totalPopBirth) * 1000;
+        document.getElementById('cbrResult').innerText = `CBR: ${cbr.toFixed(2)} per 1,000`;
+    }
+
+    function calculateNMR() {
+        const totalImmigrants = parseFloat(document.getElementById('totalImmigrants').value);
+        const totalEmigrants = parseFloat(document.getElementById('totalEmigrants').value);
+        const totalPopMigration = parseFloat(document.getElementById('totalPopMigration').value);
+        const nmr = ((totalImmigrants - totalEmigrants) / totalPopMigration) * 1000;
+        document.getElementById('nmrResult').innerText = `NMR: ${nmr.toFixed(2)} per 1,000`;
+    }
+
+    function calculateMortalityRate() {
+        const totalDeaths = parseFloat(document.getElementById('totalDeaths').value);
+        const totalPopMortality = parseFloat(document.getElementById('totalPopMortality').value);
+        const mortalityRate = (totalDeaths / totalPopMortality) * 1000;
+        document.getElementById('mortalityResult').innerText = `Mortality Rate: ${mortalityRate.toFixed(2)} per 1,000`;
+    }
+
+    function calculateSMAAM() {
+        const ageSpecificDeathRate = parseFloat(document.getElementById('ageSpecificDeathRate').value);
+        const populationAgeGroup = parseFloat(document.getElementById('populationAgeGroup').value);
+        const smaam = ageSpecificDeathRate * populationAgeGroup;
+        document.getElementById('smaamResult').innerText = `SMAAM: ${smaam.toFixed(2)}`;
+    }
+
+    function calculateGompertz() {
+        const initialPopulation = parseFloat(document.getElementById('initialPopulation').value);
+        const growthRate = parseFloat(document.getElementById('growthRate').value);
+        const gompertz = initialPopulation * Math.exp(growthRate); // Simplified model
+        document.getElementById('gompertzResult').innerText = `Gompertz Population: ${gompertz.toFixed(2)}`;
+    }
+
+    function calculateSullivan() {
+        const lifeExpectancy = parseFloat(document.getElementById('lifeExpectancy').value);
+        const yearsLivedDisability = parseFloat(document.getElementById('yearsLivedDisability').value);
+        const healthyLifeYears = lifeExpectancy - yearsLivedDisability;
+        document.getElementById('sullivanResult').innerText = `Healthy Life Years: ${healthyLifeYears.toFixed(2)}`;
+    }
+
+    function calculateFecundity() {
+        const totalLiveBirths = parseFloat(document.getElementById('totalLiveBirths').value);
+        const totalWomenChildbearing = parseFloat(document.getElementById('totalWomenChildbearing').value);
+        const fecundity = totalLiveBirths / totalWomenChildbearing;
+        document.getElementById('fecundityResult').innerText = `Fecundity: ${fecundity.toFixed(2)}`;
+    }
+</script>
                     </div>
 
                     <!-- Crude Death Rate -->
@@ -2092,3 +2264,4 @@
     </script>
 </body>
 </html>
+
