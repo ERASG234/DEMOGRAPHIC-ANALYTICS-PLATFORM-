@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Demographer - Demographic Analysis Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E40AF',
+                        secondary: '#7C3AED',
+                        accent: '#059669',
+                        warning: '#D97706',
+                        danger: '#DC2626'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .demographic-card { 
+            transition: all 0.3s ease; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .demographic-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container { position: relative; height: 400px; }
+        .pyramid-bar { transition: all 0.3s ease; }
+        .pyramid-bar:hover { opacity: 0.8; }
+        .professional-gradient { background: linear-gradient(135deg, #1E40AF, #7C3AED, #059669); }
+        .stats-card { 
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid rgba(30, 64, 175, 0.2);
+        }
+        .demographic-indicator {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+    <!-- Dark mode detection -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="fixed inset-0 bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center z-50">
+        <div class="max-w-md w-full mx-4">
+            <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fas fa-chart-pie text-white text-3xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Professional Demographer</h1>
+                    <h2 class="text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Demographic Analysis Platform</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Advanced Population Studies & Analytics</p>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="fas fa-lock mr-2"></i>Access Password
+                        </label>
+                        <input 
+                            type="password" 
+                            id="passwordInput"
+                            class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            placeholder="Enter your secure password"
+                            required
+                        >
+                    </div>
+                    
+                    <button 
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-primary to-accent hover:from-blue-700 hover:to-green-600 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg"
+                    >
+                        <i class="fas fa-unlock mr-2"></i>
+                        ACCESS PLATFORM
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Professional Demographic Analysis • Population Studies • Statistical Modeling
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="professional-gradient text-white shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <div class="w-24 h-24 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-chart-pie text-4xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold mb-2">Professional Demographer</h1>
+                <p class="text-xl text-blue-100 mb-4">Advanced Demographic Analysis & Population Studies Platform</p>
+                <div class="flex justify-center items-center space-x-6 text-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-users mr-2"></i>
+                        <span>Population Analysis</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        <span>Demographic Modeling</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-globe-americas mr-2"></i>
+                        <span>Migration Studies</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-baby mr-2"></i>
+                        <span>Fertility Analysis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Professional Credentials Banner -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <div class="stats-card p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-primary">10+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Years Experience</div>
+                </div>
+                <div class="stats-card p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-secondary">50+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Research Projects</div>
+                </div>
+                <div class="stats-card p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-accent">200M+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Population Records Analyzed</div>
+                </div>
+                <div class="stats-card p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-warning">25+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Countries Studied</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-0 overflow-x-auto">
+                <button onclick="switchTab('portfolio')" id="portfolio-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-primary text-primary whitespace-nowrap">
+                    <i class="fas fa-user-graduate mr-2"></i>Professional Portfolio
+                </button>
+                <button onclick="switchTab('population-analysis')" id="population-analysis-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap">
+                    <i class="fas fa-users mr-2"></i>Population Analysis
+                </button>
+                <button onclick="switchTab('demographic-indicators')" id="demographic-indicators-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap">
+                    <i class="fas fa-chart-bar mr-2"></i>Demographic Indicators
+                </button>
+                <button onclick="switchTab('population-pyramids')" id="population-pyramids-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap">
+                    <i class="fas fa-layer-group mr-2"></i>Population Pyramids
+                </button>
+                <button onclick="switchTab('life-tables')" id="life-tables-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap">
+                    <i class="fas fa-table mr-2"></i>Life Tables
+                </button>
+                <button onclick="switchTab('projections')" id="projections-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap">
+                    <i class="fas fa-crystal-ball mr-2"></i>Population Projections
+                </button>
+                <button onclick="switchTab('tools')" id="tools-tab" class="tab-button flex items-center px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap">
+                    <i class="fas fa-calculator mr-2"></i>Demographic Tools
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Professional Portfolio Tab -->
+        <div id="portfolio-content" class="tab-content active">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Professional Demographics Portfolio</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Demonstrating expertise in population studies, demographic analysis, and statistical modeling</p>
+            </div>
+
+            <!-- Professional Summary -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Professional Summary</h3>
+                        <div class="prose dark:prose-invert max-w-none">
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Experienced professional demographer specializing in population dynamics, mortality analysis, 
+                                fertility patterns, and migration studies. Expert in demographic modeling, statistical analysis, 
+                                and population projections with extensive experience in both developed and developing country contexts.
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Proven track record in designing and implementing demographic surveys, analyzing census data, 
+                                and producing actionable insights for policy makers, researchers, and international organizations. 
+                                Proficient in advanced statistical software and demographic analysis techniques.
+                            </p>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Core Competencies</h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Population Dynamics</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Mortality Analysis</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Fertility Studies</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Migration Analysis</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Census Data Analysis</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Population Projections</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Demographic Modeling</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-accent mr-2"></i>
+                                    <span class="text-sm">Survey Design</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Professional Memberships</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-medal text-warning mr-2"></i>
+                                <span class="text-sm">Population Association of America</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-medal text-warning mr-2"></i>
+                                <span class="text-sm">International Union for Scientific Study of Population</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-medal text-warning mr-2"></i>
+                                <span class="text-sm">American Statistical Association</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-medal text-warning mr-2"></i>
+                                <span class="text-sm">International Association of Survey Statisticians</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Projects -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Recent Demographic Projects</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="demographic-card text-white p-6 rounded-lg">
+                        <h4 class="text-lg font-bold mb-2">National Population Census Analysis</h4>
+                        <p class="text-blue-100 text-sm mb-3">Comprehensive analysis of 2020 census data including age-sex structure, fertility patterns, and urbanization trends</p>
+                        <div class="text-xs text-blue-200">Duration: 18 months | Impact: National Policy</div>
+                    </div>
+                    <div class="demographic-card text-white p-6 rounded-lg">
+                        <h4 class="text-lg font-bold mb-2">Mortality Transition Study</h4>
+                        <p class="text-blue-100 text-sm mb-3">Longitudinal study of mortality patterns and life expectancy trends across 15 countries over 50 years</p>
+                        <div class="text-xs text-blue-200">Duration: 24 months | Scope: Multi-country</div>
+                    </div>
+                    <div class="demographic-card text-white p-6 rounded-lg">
+                        <h4 class="text-lg font-bold mb-2">Migration Flow Analysis</h4>
+                        <p class="text-blue-100 text-sm mb-3">Advanced modeling of internal and international migration patterns using big data and administrative records</p>
+                        <div class="text-xs text-blue-200">Duration: 12 months | Method: Big Data Analytics</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Software Proficiency -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Technical Proficiency</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Statistical Software</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">R / RStudio</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">STATA</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">SPSS</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Python</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Demographic Software</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Spectrum / DemProj</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">MORTPAK</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">POPGROUP</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">CSPro</span>
+                                <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Population Analysis Tab -->
+        <div id="population-analysis-content" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Population Analysis Tools</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Advanced tools for analyzing population structure, growth, and dynamics</p>
+            </div>
+
+            <!-- Data Input Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Population Data Input</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Census/Survey Data</label>
+                        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+                            <i class="fas fa-upload text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Drop CSV/Excel file or click to browse</p>
+                            <input type="file" id="populationDataFile" class="hidden" accept=".csv,.xlsx,.xls">
+                            <button onclick="document.getElementById('populationDataFile').click()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">
+                                Select File
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Analysis - Sample Data</label>
+                        <div class="space-y-3">
+                            <button onclick="loadSampleData('developing')" class="w-full bg-accent text-white py-2 px-4 rounded-lg text-sm">
+                                Load Developing Country Sample
+                            </button>
+                            <button onclick="loadSampleData('developed')" class="w-full bg-secondary text-white py-2 px-4 rounded-lg text-sm">
+                                Load Developed Country Sample
+                            </button>
+                            <button onclick="loadSampleData('transition')" class="w-full bg-warning text-white py-2 px-4 rounded-lg text-sm">
+                                Load Demographic Transition Sample
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Population Structure -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Population Structure Analysis</h3>
+                    <div id="populationStructureResults" class="space-y-4">
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-8">Load population data to see analysis</p>
+                    </div>
+                </div>
+
+                <!-- Growth Analysis -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Population Growth Analysis</h3>
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demographic Indicators Tab -->
+        <div id="demographic-indicators-content" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Demographic Indicators Calculator</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Calculate key demographic rates and indicators</p>
+            </div>
+
+            <!-- Indicator Calculators -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Crude Birth Rate -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-baby text-accent mr-2"></i>Crude Birth Rate
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Births</label>
+                            <input type="number" id="totalBirths" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
+                            <input type="number" id="totalPopBirth" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateCBR()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate CBR</button>
+                        <div id="cbrResult" class="text-center font-bold text-accent text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Crude Death Rate -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-cross text-danger mr-2"></i>Crude Death Rate
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Deaths</label>
+                            <input type="number" id="totalDeaths" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
+                            <input type="number" id="totalPopDeath" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateCDR()" class="w-full bg-danger text-white py-2 px-4 rounded-lg">Calculate CDR</button>
+                        <div id="cdrResult" class="text-center font-bold text-danger text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Total Fertility Rate -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-female text-secondary mr-2"></i>Total Fertility Rate
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age-Specific Fertility Rates (comma-separated)</label>
+                            <textarea id="asfrRates" placeholder="e.g., 0.02, 0.15, 0.18, 0.16, 0.12, 0.08, 0.03" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base h-20 resize-none"></textarea>
+                        </div>
+                        <button onclick="calculateTFR()" class="w-full bg-secondary text-white py-2 px-4 rounded-lg">Calculate TFR</button>
+                        <div id="tfrResult" class="text-center font-bold text-secondary text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Net Migration Rate -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-exchange-alt text-warning mr-2"></i>Net Migration Rate
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Immigration</label>
+                            <input type="number" id="immigration" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Emigration</label>
+                            <input type="number" id="emigration" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Population</label>
+                            <input type="number" id="totalPopMigration" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateNMR()" class="w-full bg-warning text-white py-2 px-4 rounded-lg">Calculate NMR</button>
+                        <div id="nmrResult" class="text-center font-bold text-warning text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Dependency Ratio -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-balance-scale text-primary mr-2"></i>Dependency Ratio
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Population 0-14</label>
+                            <input type="number" id="pop0to14" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Population 15-64</label>
+                            <input type="number" id="pop15to64" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Population 65+</label>
+                            <input type="number" id="pop65plus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateDependencyRatio()" class="w-full bg-primary text-white py-2 px-4 rounded-lg">Calculate Ratios</button>
+                        <div id="dependencyResult" class="text-center font-bold text-primary text-sm space-y-1"></div>
+                    </div>
+                </div>
+
+                <!-- Population Growth Rate -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-chart-line text-accent mr-2"></i>Population Growth Rate
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Population</label>
+                            <input type="number" id="initialPop" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Final Population</label>
+                            <input type="number" id="finalPop" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time Period (years)</label>
+                            <input type="number" id="timePeriod" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateGrowthRate()" class="w-full bg-accent text-white py-2 px-4 rounded-lg">Calculate Growth</button>
+                        <div id="growthRateResult" class="text-center font-bold text-accent text-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Population Pyramids Tab -->
+        <div id="population-pyramids-content" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Population Pyramid Builder</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Create and analyze population pyramids for demographic structure visualization</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Pyramid Controls -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Pyramid Configuration</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country/Region Name</label>
+                            <input type="text" id="pyramidTitle" placeholder="e.g., Country X, 2023" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pyramid Type</label>
+                            <select id="pyramidType" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                                <option value="expansive">Expansive (Young Population)</option>
+                                <option value="constrictive">Constrictive (Aging Population)</option>
+                                <option value="stationary">Stationary (Stable Population)</option>
+                                <option value="custom">Custom Data</option>
+                            </select>
+                        </div>
+                        <button onclick="generatePyramid()" class="w-full bg-primary text-white py-2 px-4 rounded-lg">
+                            Generate Pyramid
+                        </button>
+                        
+                        <div id="pyramidUpload" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Age-Sex Data</label>
+                            <input type="file" id="pyramidDataFile" accept=".csv,.xlsx" class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-700">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pyramid Visualization -->
+                <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Population Pyramid</h3>
+                    <div class="chart-container">
+                        <canvas id="populationPyramid"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pyramid Analysis -->
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Pyramid Analysis</h3>
+                <div id="pyramidAnalysis" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8 md:col-span-3">Generate a pyramid to see analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Life Tables Tab -->
+        <div id="life-tables-content" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Life Table Construction</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Build complete life tables and calculate mortality indicators</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Life Table Input -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Mortality Data Input</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Age-Specific Death Rates (per 1,000)</label>
+                            <textarea id="mortalityRates" placeholder="Enter rates for age groups 0-1, 1-4, 5-9, 10-14, ..., 80+" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base h-32 resize-none"></textarea>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Comma-separated values, e.g., 8.5, 1.2, 0.3, 0.4, ...</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Population Type</label>
+                                <select id="populationType" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                                    <option value="both">Both Sexes</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Radix (l₀)</label>
+                                <input type="number" id="radix" value="100000" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                            </div>
+                        </div>
+                        <button onclick="constructLifeTable()" class="w-full bg-primary text-white py-2 px-4 rounded-lg">
+                            Construct Life Table
+                        </button>
+                        <button onclick="loadSampleMortality()" class="w-full bg-secondary text-white py-2 px-4 rounded-lg">
+                            Load Sample Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Life Table Results -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Life Table Summary</h3>
+                    <div id="lifeTableSummary" class="space-y-4">
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-8">Construct life table to see results</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complete Life Table Display -->
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Complete Life Table</h3>
+                <div id="lifeTableDisplay" class="overflow-x-auto">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">Life table will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Population Projections Tab -->
+        <div id="projections-content" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Population Projections</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Project future population using cohort-component method</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Projection Parameters -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Projection Parameters</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Base Year</label>
+                                <input type="number" id="baseYear" value="2023" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Year</label>
+                                <input type="number" id="targetYear" value="2050" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Base Population (total)</label>
+                            <input type="number" id="basePopulation" value="1000000" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Birth Rate (/1000)</label>
+                                <input type="number" id="birthRate" value="20" step="0.1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Death Rate (/1000)</label>
+                                <input type="number" id="deathRate" value="8" step="0.1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Migration Rate (/1000)</label>
+                                <input type="number" id="migrationRate" value="2" step="0.1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Projection Method</label>
+                            <select id="projectionMethod" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                                <option value="exponential">Exponential Growth</option>
+                                <option value="logistic">Logistic Growth</option>
+                                <option value="cohort-component">Cohort-Component</option>
+                            </select>
+                        </div>
+                        <button onclick="calculateProjections()" class="w-full bg-primary text-white py-2 px-4 rounded-lg">
+                            Calculate Projections
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Projection Results -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Projection Summary</h3>
+                    <div id="projectionSummary" class="space-y-4">
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-8">Run projection to see results</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projection Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Population Projection Chart</h3>
+                <div class="chart-container">
+                    <canvas id="projectionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demographic Tools Tab -->
+        <div id="tools-content" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Advanced Demographic Tools</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Specialized calculators and analysis tools for demographic research</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Standardization Tool -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-balance-scale text-primary mr-2"></i>Age Standardization
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Calculate age-standardized rates using direct method</p>
+                    <div class="space-y-3">
+                        <textarea id="ageSpecificRates" placeholder="Age-specific rates (comma-separated)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base h-20 resize-none"></textarea>
+                        <textarea id="standardPopulation" placeholder="Standard population weights" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base h-20 resize-none"></textarea>
+                        <button onclick="calculateStandardizedRate()" class="w-full bg-primary text-white py-2 px-4 rounded-lg text-sm">
+                            Calculate Standardized Rate
+                        </button>
+                        <div id="standardizedResult" class="text-center font-bold text-primary text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Life Expectancy Calculator -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-heartbeat text-danger mr-2"></i>Life Expectancy
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Calculate life expectancy from survival data</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Infant Mortality Rate (/1000)</label>
+                            <input type="number" id="infantMortality" step="0.1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adult Mortality (15-60)</label>
+                            <input type="number" id="adultMortality" step="0.001" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="estimateLifeExpectancy()" class="w-full bg-danger text-white py-2 px-4 rounded-lg text-sm">
+                            Estimate Life Expectancy
+                        </button>
+                        <div id="lifeExpectancyResult" class="text-center font-bold text-danger text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Population Doubling Time -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-clock text-warning mr-2"></i>Doubling Time
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Calculate population doubling time</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Growth Rate (% per year)</label>
+                            <input type="number" id="growthRateDoubling" step="0.1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateDoublingTime()" class="w-full bg-warning text-white py-2 px-4 rounded-lg text-sm">
+                            Calculate Doubling Time
+                        </button>
+                        <div id="doublingTimeResult" class="text-center font-bold text-warning text-lg"></div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
+                            Formula: 70 / growth rate
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Child-Woman Ratio -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-child text-accent mr-2"></i>Child-Woman Ratio
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Indirect fertility measure</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Children 0-4 years</label>
+                            <input type="number" id="children0to4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Women 15-49 years</label>
+                            <input type="number" id="women15to49" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateCWR()" class="w-full bg-accent text-white py-2 px-4 rounded-lg text-sm">
+                            Calculate CWR
+                        </button>
+                        <div id="cwrResult" class="text-center font-bold text-accent text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Survivorship Ratio -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-chart-area text-secondary mr-2"></i>Survivorship Ratio
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Calculate survival probabilities</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Population at time t</label>
+                            <input type="number" id="populationTimeT" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Population at time t+n</label>
+                            <input type="number" id="populationTimeTn" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="calculateSurvivorship()" class="w-full bg-secondary text-white py-2 px-4 rounded-lg text-sm">
+                            Calculate Ratio
+                        </button>
+                        <div id="survivorshipResult" class="text-center font-bold text-secondary text-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Report Generator -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-file-pdf text-danger mr-2"></i>Report Generator
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Generate demographic analysis report</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Report Title</label>
+                            <input type="text" id="reportTitle" placeholder="Demographic Analysis Report" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Analysis Date</label>
+                            <input type="date" id="analysisDate" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-base">
+                        </div>
+                        <button onclick="generateDemographicReport()" class="w-full bg-danger text-white py-2 px-4 rounded-lg text-sm">
+                            Generate PDF Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="professional-gradient text-white mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">Professional Credentials</h3>
+                        <ul class="space-y-2 text-blue-100">
+                            <li>Ph.D. in Demography</li>
+                            <li>Certified Population Analyst</li>
+                            <li>10+ Years Experience</li>
+                            <li>50+ Research Projects</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">Specializations</h3>
+                        <ul class="space-y-2 text-blue-100">
+                            <li>Population Dynamics</li>
+                            <li>Mortality & Fertility Analysis</li>
+                            <li>Migration Studies</li>
+                            <li>Demographic Modeling</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">Tools & Software</h3>
+                        <ul class="space-y-2 text-blue-100">
+                            <li>R, STATA, SPSS, Python</li>
+                            <li>Spectrum, MORTPAK</li>
+                            <li>Advanced Statistics</li>
+                            <li>GIS & Spatial Analysis</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-blue-400 pt-6">
+                    <p class="text-blue-100 mb-2">&copy; 2024 Professional Demographer Platform</p>
+                    <p class="text-blue-200 text-sm">Advanced Demographic Analysis & Population Studies • Built with Demographic Expertise</p>
+                    <div class="mt-4 flex justify-center space-x-6">
+                        <a href="#" class="text-blue-200 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-blue-200 hover:text-white transition-colors">
+                            <i class="fab fa-researchgate text-xl"></i>
+                        </a>
+                        <a href="#" class="text-blue-200 hover:text-white transition-colors">
+                            <i class="fab fa-orcid text-xl"></i>
+                        </a>
+                        <a href="#" class="text-blue-200 hover:text-white transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div>
+
+    <script>
+        // Login System
+        function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === 'gwidza@2025') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+            } else {
+                // Create error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm text-center';
+                errorDiv.textContent = 'Invalid password. Please try again.';
+                
+                // Remove existing error messages
+                const existingError = document.querySelector('.bg-red-100');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                // Add error message
+                document.getElementById('loginForm').appendChild(errorDiv);
+                
+                // Clear password field
+                document.getElementById('passwordInput').value = '';
+                
+                // Remove error after 3 seconds
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 3000);
+            }
+        }
+
+        // Setup login form
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        });
+        // Application State
+        let currentTab = 'portfolio';
+        let populationData = null;
+        let lifeTableData = null;
+        let projectionResults = null;
+        
+        // Charts
+        let growthChart = null;
+        let pyramidChart = null;
+        let projectionChart = null;
+
+        // Tab Management
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('border-primary', 'text-primary');
+                button.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            });
+
+            document.getElementById(`${tabName}-content`).classList.add('active');
+
+            const activeButton = document.getElementById(`${tabName}-tab`);
+            activeButton.classList.add('border-primary', 'text-primary');
+            activeButton.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+
+            currentTab = tabName;
+        }
+
+        // Population Analysis Functions
+        function loadSampleData(type) {
+            let sampleData;
+            
+            switch(type) {
+                case 'developing':
+                    sampleData = {
+                        name: 'Developing Country Sample',
+                        totalPopulation: 50000000,
+                        ageStructure: {
+                            '0-14': 35,
+                            '15-64': 60,
+                            '65+': 5
+                        },
+                        growthRate: 2.5,
+                        birthRate: 28,
+                        deathRate: 7,
+                        tfr: 4.2,
+                        lifeExpectancy: 68
+                    };
+                    break;
+                case 'developed':
+                    sampleData = {
+                        name: 'Developed Country Sample',
+                        totalPopulation: 80000000,
+                        ageStructure: {
+                            '0-14': 15,
+                            '15-64': 65,
+                            '65+': 20
+                        },
+                        growthRate: 0.3,
+                        birthRate: 10,
+                        deathRate: 9,
+                        tfr: 1.4,
+                        lifeExpectancy: 82
+                    };
+                    break;
+                case 'transition':
+                    sampleData = {
+                        name: 'Demographic Transition Sample',
+                        totalPopulation: 25000000,
+                        ageStructure: {
+                            '0-14': 25,
+                            '15-64': 68,
+                            '65+': 7
+                        },
+                        growthRate: 1.2,
+                        birthRate: 18,
+                        deathRate: 6,
+                        tfr: 2.1,
+                        lifeExpectancy: 75
+                    };
+                    break;
+            }
+            
+            populationData = sampleData;
+            displayPopulationAnalysis();
+            updateGrowthChart();
+        }
+
+        function displayPopulationAnalysis() {
+            if (!populationData) return;
+            
+            const results = document.getElementById('populationStructureResults');
+            results.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-primary bg-opacity-10 p-4 rounded-lg">
+                        <h4 class="font-bold text-primary mb-2">${populationData.name}</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Total Population: ${populationData.totalPopulation.toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-accent">${populationData.ageStructure['0-14']}%</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Children (0-14)</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-secondary">${populationData.ageStructure['15-64']}%</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Working Age (15-64)</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-warning">${populationData.ageStructure['65+']}%</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Elderly (65+)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Key Indicators</h5>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>Growth Rate: ${populationData.growthRate}%</div>
+                            <div>Birth Rate: ${populationData.birthRate}/1000</div>
+                            <div>Death Rate: ${populationData.deathRate}/1000</div>
+                            <div>TFR: ${populationData.tfr}</div>
+                            <div>Life Expectancy: ${populationData.lifeExpectancy} years</div>
+                            <div>Dependency Ratio: ${calculateDependencyFromStructure()}%</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateDependencyFromStructure() {
+            if (!populationData) return 0;
+            const dependent = populationData.ageStructure['0-14'] + populationData.ageStructure['65+'];
+            const working = populationData.ageStructure['15-64'];
+            return ((dependent / working) * 100).toFixed(1);
+        }
+
+        function updateGrowthChart() {
+            if (!populationData) return;
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+            
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            // Generate projection data
+            const years = [];
+            const populations = [];
+            const baseYear = 2020;
+            const basePop = populationData.totalPopulation;
+            const growthRate = populationData.growthRate / 100;
+            
+            for (let i = 0; i <= 30; i++) {
+                years.push(baseYear + i);
+                populations.push(basePop * Math.pow(1 + growthRate, i));
+            }
+            
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Projected Population',
+                        data: populations,
+                        borderColor: '#1E40AF',
+                        backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Population Growth Projection - ${populationData.name}`
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Demographic Indicators Functions
+        function calculateCBR() {
+            const births = parseFloat(document.getElementById('totalBirths').value);
+            const population = parseFloat(document.getElementById('totalPopBirth').value);
+            
+            if (births && population) {
+                const cbr = (births / population) * 1000;
+                document.getElementById('cbrResult').textContent = `${cbr.toFixed(1)} per 1,000`;
+            }
+        }
+
+        function calculateCDR() {
+            const deaths = parseFloat(document.getElementById('totalDeaths').value);
+            const population = parseFloat(document.getElementById('totalPopDeath').value);
+            
+            if (deaths && population) {
+                const cdr = (deaths / population) * 1000;
+                document.getElementById('cdrResult').textContent = `${cdr.toFixed(1)} per 1,000`;
+            }
+        }
+
+        function calculateTFR() {
+            const asfrInput = document.getElementById('asfrRates').value;
+            if (!asfrInput.trim()) return;
+            
+            const asfr = asfrInput.split(',').map(rate => parseFloat(rate.trim())).filter(rate => !isNaN(rate));
+            const tfr = asfr.reduce((sum, rate) => sum + rate, 0) * 5; // Assuming 5-year age groups
+            
+            document.getElementById('tfrResult').textContent = `${tfr.toFixed(2)} children per woman`;
+        }
+
+        function calculateNMR() {
+            const immigration = parseFloat(document.getElementById('immigration').value);
+            const emigration = parseFloat(document.getElementById('emigration').value);
+            const population = parseFloat(document.getElementById('totalPopMigration').value);
+            
+            if (immigration !== undefined && emigration !== undefined && population) {
+                const netMigration = immigration - emigration;
+                const nmr = (netMigration / population) * 1000;
+                document.getElementById('nmrResult').textContent = `${nmr.toFixed(1)} per 1,000`;
+            }
+        }
+
+        function calculateDependencyRatio() {
+            const pop0to14 = parseFloat(document.getElementById('pop0to14').value);
+            const pop15to64 = parseFloat(document.getElementById('pop15to64').value);
+            const pop65plus = parseFloat(document.getElementById('pop65plus').value);
+            
+            if (pop0to14 && pop15to64 && pop65plus) {
+                const youthDR = (pop0to14 / pop15to64) * 100;
+                const agingDR = (pop65plus / pop15to64) * 100;
+                const totalDR = youthDR + agingDR;
+                
+                document.getElementById('dependencyResult').innerHTML = `
+                    <div>Youth: ${youthDR.toFixed(1)}%</div>
+                    <div>Aging: ${agingDR.toFixed(1)}%</div>
+                    <div>Total: ${totalDR.toFixed(1)}%</div>
+                `;
+            }
+        }
+
+        function calculateGrowthRate() {
+            const initial = parseFloat(document.getElementById('initialPop').value);
+            const final = parseFloat(document.getElementById('finalPop').value);
+            const time = parseFloat(document.getElementById('timePeriod').value);
+            
+            if (initial && final && time) {
+                const growthRate = (Math.pow(final / initial, 1 / time) - 1) * 100;
+                document.getElementById('growthRateResult').textContent = `${growthRate.toFixed(2)}% per year`;
+            }
+        }
+
+        // Population Pyramid Functions
+        function generatePyramid() {
+            const title = document.getElementById('pyramidTitle').value || 'Population Pyramid';
+            const type = document.getElementById('pyramidType').value;
+            
+            let pyramidData;
+            
+            switch(type) {
+                case 'expansive':
+                    pyramidData = generateExpansivePyramid();
+                    break;
+                case 'constrictive':
+                    pyramidData = generateConstrictivePyramid();
+                    break;
+                case 'stationary':
+                    pyramidData = generateStationaryPyramid();
+                    break;
+                case 'custom':
+                    // Handle custom file upload
+                    return;
+                default:
+                    pyramidData = generateExpansivePyramid();
+            }
+            
+            displayPyramid(pyramidData, title);
+            analyzePyramid(pyramidData, type);
+        }
+
+        function generateExpansivePyramid() {
+            const ageGroups = ['0-4', '5-9', '10-14', '15-19', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60-64', '65-69', '70-74', '75-79', '80+'];
+            const maleData = [8.5, 7.8, 7.2, 6.8, 6.5, 6.0, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.5, 2.0, 1.5, 1.0, 0.5];
+            const femaleData = [8.0, 7.5, 7.0, 6.5, 6.2, 5.8, 5.3, 4.8, 4.3, 3.8, 3.3, 2.8, 2.3, 1.8, 1.3, 0.8, 0.4];
+            
+            return { ageGroups, maleData, femaleData };
+        }
+
+        function generateConstrictivePyramid() {
+            const ageGroups = ['0-4', '5-9', '10-14', '15-19', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60-64', '65-69', '70-74', '75-79', '80+'];
+            const maleData = [4.0, 4.2, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.2, 7.0, 6.8, 6.5, 6.0, 5.5, 4.5, 3.0, 2.0];
+            const femaleData = [3.8, 4.0, 4.3, 4.8, 5.3, 5.8, 6.2, 6.8, 7.0, 6.8, 6.6, 6.3, 5.8, 5.3, 4.3, 2.8, 1.8];
+            
+            return { ageGroups, maleData, femaleData };
+        }
+
+        function generateStationaryPyramid() {
+            const ageGroups = ['0-4', '5-9', '10-14', '15-19', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60-64', '65-69', '70-74', '75-79', '80+'];
+            const maleData = [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 5.8, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.0, 1.0];
+            const femaleData = [5.8, 5.8, 5.8, 5.8, 5.8, 5.8, 5.8, 5.8, 5.6, 5.3, 4.8, 4.3, 3.8, 3.3, 2.8, 1.8, 0.8];
+            
+            return { ageGroups, maleData, femaleData };
+        }
+
+        function displayPyramid(data, title) {
+            if (pyramidChart) {
+                pyramidChart.destroy();
+            }
+            
+            const ctx = document.getElementById('populationPyramid').getContext('2d');
+            
+            pyramidChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.ageGroups,
+                    datasets: [
+                        {
+                            label: 'Male',
+                            data: data.maleData.map(val => -val), // Negative for left side
+                            backgroundColor: '#3B82F6',
+                            borderColor: '#1E40AF',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Female',
+                            data: data.femaleData,
+                            backgroundColor: '#EC4899',
+                            borderColor: '#BE185D',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                callback: function(value) {
+                                    return Math.abs(value) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function analyzePyramid(data, type) {
+            const totalMale = data.maleData.reduce((sum, val) => sum + val, 0);
+            const totalFemale = data.femaleData.reduce((sum, val) => sum + val, 0);
+            const sexRatio = (totalMale / totalFemale) * 100;
+            
+            const youth = (data.maleData.slice(0, 3).reduce((sum, val) => sum + val, 0) + 
+                          data.femaleData.slice(0, 3).reduce((sum, val) => sum + val, 0)) / 
+                         (totalMale + totalFemale) * 100;
+                         
+            const elderly = (data.maleData.slice(-4).reduce((sum, val) => sum + val, 0) + 
+                            data.femaleData.slice(-4).reduce((sum, val) => sum + val, 0)) / 
+                           (totalMale + totalFemale) * 100;
+            
+            let interpretation = '';
+            switch(type) {
+                case 'expansive':
+                    interpretation = 'Expansive pyramid indicates high birth rates and young population structure. Typical of developing countries with rapid population growth.';
+                    break;
+                case 'constrictive':
+                    interpretation = 'Constrictive pyramid shows declining birth rates and aging population. Common in developed countries with low fertility.';
+                    break;
+                case 'stationary':
+                    interpretation = 'Stationary pyramid represents stable population with balanced age structure and replacement-level fertility.';
+                    break;
+            }
+            
+            document.getElementById('pyramidAnalysis').innerHTML = `
+                <div class="bg-primary bg-opacity-10 p-4 rounded-lg">
+                    <h4 class="font-bold text-primary mb-2">Sex Ratio</h4>
+                    <p class="text-2xl font-bold text-primary">${sexRatio.toFixed(1)}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Males per 100 females</p>
+                </div>
+                <div class="bg-accent bg-opacity-10 p-4 rounded-lg">
+                    <h4 class="font-bold text-accent mb-2">Youth Population</h4>
+                    <p class="text-2xl font-bold text-accent">${youth.toFixed(1)}%</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Ages 0-14</p>
+                </div>
+                <div class="bg-warning bg-opacity-10 p-4 rounded-lg">
+                    <h4 class="font-bold text-warning mb-2">Elderly Population</h4>
+                    <p class="text-2xl font-bold text-warning">${elderly.toFixed(1)}%</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Ages 65+</p>
+                </div>
+                <div class="md:col-span-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-2">Interpretation</h4>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">${interpretation}</p>
+                </div>
+            `;
+        }
+
+        // Life Table Functions
+        function loadSampleMortality() {
+            document.getElementById('mortalityRates').value = '8.5, 1.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.5, 4.0, 6.5, 10.5, 16.8, 27.2, 44.7, 73.6, 121.7';
+        }
+
+        function constructLifeTable() {
+            const ratesInput = document.getElementById('mortalityRates').value;
+            const popType = document.getElementById('populationType').value;
+            const radix = parseInt(document.getElementById('radix').value) || 100000;
+            
+            if (!ratesInput.trim()) {
+                alert('Please enter mortality rates');
+                return;
+            }
+            
+            const mx = ratesInput.split(',').map(rate => parseFloat(rate.trim()) / 1000).filter(rate => !isNaN(rate));
+            
+            if (mx.length === 0) {
+                alert('Invalid mortality rates');
+                return;
+            }
+            
+            const lifeTable = calculateLifeTable(mx, radix);
+            displayLifeTable(lifeTable, popType);
+            displayLifeTableSummary(lifeTable);
+        }
+
+        function calculateLifeTable(mx, radix) {
+            const ageGroups = ['0-1', '1-4', '5-9', '10-14', '15-19', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60-64', '65-69', '70-74', '75-79', '80+'];
+            const n = [1, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]; // Age intervals
+            
+            const lifeTable = [];
+            let lx = radix;
+            
+            for (let i = 0; i < mx.length; i++) {
+                const nMx = mx[i];
+                const nAx = i === 0 ? 0.1 : (i === 1 ? 1.5 : n[i] / 2); // Life years lived in interval
+                const nQx = (n[i] * nMx) / (1 + (n[i] - nAx) * nMx); // Probability of death
+                const nDx = lx * nQx; // Deaths
+                const nLx = (lx - nDx) * n[i] + nDx * nAx; // Person-years lived
+                
+                // Calculate Tx (total person-years lived above age x)
+                let Tx = 0;
+                for (let j = i; j < mx.length; j++) {
+                    if (j === mx.length - 1) {
+                        // Open-ended age group
+                        Tx += lx / mx[j];
+                        break;
+                    } else {
+                        const tempLx = j === i ? lx : calculateTempLx(mx, radix, j);
+                        const tempNQx = (n[j] * mx[j]) / (1 + (n[j] - (j === 0 ? 0.1 : (j === 1 ? 1.5 : n[j] / 2))) * mx[j]);
+                        const tempNDx = tempLx * tempNQx;
+                        const tempNLx = (tempLx - tempNDx) * n[j] + tempNDx * (j === 0 ? 0.1 : (j === 1 ? 1.5 : n[j] / 2));
+                        Tx += tempNLx;
+                    }
+                }
+                
+                const ex = Tx / lx; // Life expectancy
+                
+                lifeTable.push({
+                    ageGroup: ageGroups[i] || `${i * 5}-${i * 5 + 4}`,
+                    nMx: nMx.toFixed(5),
+                    nQx: nQx.toFixed(5),
+                    lx: Math.round(lx),
+                    nDx: Math.round(nDx),
+                    nLx: Math.round(nLx),
+                    Tx: Math.round(Tx),
+                    ex: ex.toFixed(2)
+                });
+                
+                lx = lx - nDx;
+                if (lx <= 0) break;
+            }
+            
+            return lifeTable;
+        }
+
+        function calculateTempLx(mx, radix, upToIndex) {
+            let lx = radix;
+            const n = [1, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+            
+            for (let i = 0; i < upToIndex; i++) {
+                const nAx = i === 0 ? 0.1 : (i === 1 ? 1.5 : n[i] / 2);
+                const nQx = (n[i] * mx[i]) / (1 + (n[i] - nAx) * mx[i]);
+                const nDx = lx * nQx;
+                lx = lx - nDx;
+                if (lx <= 0) break;
+            }
+            
+            return lx;
+        }
+
+        function displayLifeTable(lifeTable, popType) {
+            const display = document.getElementById('lifeTableDisplay');
+            
+            let html = `
+                <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-6 py-3">Age Group</th>
+                            <th class="px-6 py-3">nMx</th>
+                            <th class="px-6 py-3">nQx</th>
+                            <th class="px-6 py-3">lx</th>
+                            <th class="px-6 py-3">nDx</th>
+                            <th class="px-6 py-3">nLx</th>
+                            <th class="px-6 py-3">Tx</th>
+                            <th class="px-6 py-3">ex</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            lifeTable.forEach((row, index) => {
+                html += `
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : ''}">
+                        <td class="px-6 py-4 font-medium">${row.ageGroup}</td>
+                        <td class="px-6 py-4">${row.nMx}</td>
+                        <td class="px-6 py-4">${row.nQx}</td>
+                        <td class="px-6 py-4">${row.lx}</td>
+                        <td class="px-6 py-4">${row.nDx}</td>
+                        <td class="px-6 py-4">${row.nLx}</td>
+                        <td class="px-6 py-4">${row.Tx}</td>
+                        <td class="px-6 py-4 font-bold text-primary">${row.ex}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            display.innerHTML = html;
+        }
+
+        function displayLifeTableSummary(lifeTable) {
+            const summary = document.getElementById('lifeTableSummary');
+            const lifeExpectancy = lifeTable[0].ex;
+            const infantMortality = (parseFloat(lifeTable[0].nQx) * 1000).toFixed(1);
+            
+            summary.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-primary bg-opacity-10 p-4 rounded-lg text-center">
+                        <h4 class="font-bold text-primary mb-2">Life Expectancy at Birth</h4>
+                        <p class="text-3xl font-bold text-primary">${lifeExpectancy}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">years</p>
+                    </div>
+                    
+                    <div class="bg-danger bg-opacity-10 p-4 rounded-lg text-center">
+                        <h4 class="font-bold text-danger mb-2">Infant Mortality Rate</h4>
+                        <p class="text-2xl font-bold text-danger">${infantMortality}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">per 1,000 births</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h4 class="font-bold text-gray-900 dark:text-white mb-2">Key Insights</h4>
+                        <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                            <li>• Probability of surviving to age 65: ${(100 - parseFloat(lifeTable.slice(0, 13).reduce((sum, row) => sum + parseFloat(row.nQx), 0)) * 100).toFixed(1)}%</li>
+                            <li>• Most deaths occur in: ${lifeTable.reduce((max, row) => parseFloat(row.nDx) > parseFloat(max.nDx) ? row : max).ageGroup} age group</li>
+                            <li>• Radix used: ${lifeTable[0].lx.toLocaleString()}</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Population Projections Functions
+        function calculateProjections() {
+            const baseYear = parseInt(document.getElementById('baseYear').value);
+            const targetYear = parseInt(document.getElementById('targetYear').value);
+            const basePop = parseFloat(document.getElementById('basePopulation').value);
+            const birthRate = parseFloat(document.getElementById('birthRate').value) / 1000;
+            const deathRate = parseFloat(document.getElementById('deathRate').value) / 1000;
+            const migrationRate = parseFloat(document.getElementById('migrationRate').value) / 1000;
+            const method = document.getElementById('projectionMethod').value;
+            
+            if (!baseYear || !targetYear || !basePop) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const years = targetYear - baseYear;
+            const growthRate = birthRate - deathRate + migrationRate;
+            
+            let projections = [];
+            
+            switch(method) {
+                case 'exponential':
+                    projections = calculateExponentialProjection(basePop, growthRate, years, baseYear);
+                    break;
+                case 'logistic':
+                    projections = calculateLogisticProjection(basePop, growthRate, years, baseYear);
+                    break;
+                case 'cohort-component':
+                    projections = calculateCohortComponentProjection(basePop, birthRate, deathRate, migrationRate, years, baseYear);
+                    break;
+            }
+            
+            projectionResults = projections;
+            displayProjectionSummary(projections, targetYear);
+            updateProjectionChart(projections);
+        }
+
+        function calculateExponentialProjection(basePop, growthRate, years, baseYear) {
+            const projections = [];
+            
+            for (let i = 0; i <= years; i++) {
+                const population = basePop * Math.exp(growthRate * i);
+                projections.push({
+                    year: baseYear + i,
+                    population: Math.round(population),
+                    growthRate: growthRate * 100
+                });
+            }
+            
+            return projections;
+        }
+
+        function calculateLogisticProjection(basePop, growthRate, years, baseYear) {
+            const carryingCapacity = basePop * 3; // Assume 3x current population as carrying capacity
+            const projections = [];
+            
+            for (let i = 0; i <= years; i++) {
+                const t = i;
+                const population = carryingCapacity / (1 + ((carryingCapacity - basePop) / basePop) * Math.exp(-growthRate * t));
+                projections.push({
+                    year: baseYear + i,
+                    population: Math.round(population),
+                    growthRate: growthRate * 100
+                });
+            }
+            
+            return projections;
+        }
+
+        function calculateCohortComponentProjection(basePop, birthRate, deathRate, migrationRate, years, baseYear) {
+            const projections = [];
+            let currentPop = basePop;
+            
+            for (let i = 0; i <= years; i++) {
+                projections.push({
+                    year: baseYear + i,
+                    population: Math.round(currentPop),
+                    births: Math.round(currentPop * birthRate),
+                    deaths: Math.round(currentPop * deathRate),
+                    migration: Math.round(currentPop * migrationRate)
+                });
+                
+                if (i < years) {
+                    const births = currentPop * birthRate;
+                    const deaths = currentPop * deathRate;
+                    const migration = currentPop * migrationRate;
+                    currentPop = currentPop + births - deaths + migration;
+                }
+            }
+            
+            return projections;
+        }
+
+        function displayProjectionSummary(projections, targetYear) {
+            const summary = document.getElementById('projectionSummary');
+            const finalProjection = projections[projections.length - 1];
+            const initialProjection = projections[0];
+            const totalGrowth = ((finalProjection.population - initialProjection.population) / initialProjection.population) * 100;
+            const annualGrowthRate = (Math.pow(finalProjection.population / initialProjection.population, 1 / (projections.length - 1)) - 1) * 100;
+            
+            summary.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-primary bg-opacity-10 p-4 rounded-lg text-center">
+                        <h4 class="font-bold text-primary mb-2">Projected Population ${targetYear}</h4>
+                        <p class="text-3xl font-bold text-primary">${finalProjection.population.toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="bg-accent bg-opacity-10 p-4 rounded-lg text-center">
+                        <h4 class="font-bold text-accent mb-2">Total Growth</h4>
+                        <p class="text-2xl font-bold text-accent">${totalGrowth.toFixed(1)}%</p>
+                    </div>
+                    
+                    <div class="bg-secondary bg-opacity-10 p-4 rounded-lg text-center">
+                        <h4 class="font-bold text-secondary mb-2">Annual Growth Rate</h4>
+                        <p class="text-2xl font-bold text-secondary">${annualGrowthRate.toFixed(2)}%</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h4 class="font-bold text-gray-900 dark:text-white mb-2">Projection Details</h4>
+                        <div class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                            <p>Base Population: ${initialProjection.population.toLocaleString()}</p>
+                            <p>Projection Period: ${projections.length - 1} years</p>
+                            <p>Population Change: ${(finalProjection.population - initialProjection.population).toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateProjectionChart(projections) {
+            if (projectionChart) {
+                projectionChart.destroy();
+            }
+            
+            const ctx = document.getElementById('projectionChart').getContext('2d');
+            
+            projectionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: projections.map(p => p.year),
+                    datasets: [{
+                        label: 'Projected Population',
+                        data: projections.map(p => p.population),
+                        borderColor: '#1E40AF',
+                        backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Population Projection'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Advanced Tools Functions
+        function calculateStandardizedRate() {
+            const ratesInput = document.getElementById('ageSpecificRates').value;
+            const weightsInput = document.getElementById('standardPopulation').value;
+            
+            if (!ratesInput.trim() || !weightsInput.trim()) {
+                alert('Please enter both age-specific rates and standard population weights');
+                return;
+            }
+            
+            const rates = ratesInput.split(',').map(r => parseFloat(r.trim())).filter(r => !isNaN(r));
+            const weights = weightsInput.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
+            
+            if (rates.length !== weights.length) {
+                alert('Number of rates must match number of weights');
+                return;
+            }
+            
+            const numerator = rates.reduce((sum, rate, index) => sum + (rate * weights[index]), 0);
+            const denominator = weights.reduce((sum, weight) => sum + weight, 0);
+            const standardizedRate = (numerator / denominator) * 1000;
+            
+            document.getElementById('standardizedResult').textContent = `${standardizedRate.toFixed(2)} per 1,000`;
+        }
+
+        function estimateLifeExpectancy() {
+            const imr = parseFloat(document.getElementById('infantMortality').value);
+            const adultMortality = parseFloat(document.getElementById('adultMortality').value);
+            
+            if (isNaN(imr) || isNaN(adultMortality)) {
+                alert('Please enter both mortality indicators');
+                return;
+            }
+            
+            // Simplified estimation using WHO method
+            const lifeExpectancy = 80 - (imr * 0.1) - (adultMortality * 50);
+            
+            document.getElementById('lifeExpectancyResult').textContent = `${Math.max(lifeExpectancy, 40).toFixed(1)} years`;
+        }
+
+        function calculateDoublingTime() {
+            const growthRate = parseFloat(document.getElementById('growthRateDoubling').value);
+            
+            if (isNaN(growthRate) || growthRate <= 0) {
+                alert('Please enter a positive growth rate');
+                return;
+            }
+            
+            const doublingTime = 70 / growthRate;
+            document.getElementById('doublingTimeResult').textContent = `${doublingTime.toFixed(1)} years`;
+        }
+
+        function calculateCWR() {
+            const children = parseFloat(document.getElementById('children0to4').value);
+            const women = parseFloat(document.getElementById('women15to49').value);
+            
+            if (isNaN(children) || isNaN(women) || women === 0) {
+                alert('Please enter valid numbers for both fields');
+                return;
+            }
+            
+            const cwr = (children / women) * 1000;
+            document.getElementById('cwrResult').textContent = `${cwr.toFixed(0)} per 1,000`;
+        }
+
+        function calculateSurvivorship() {
+            const popT = parseFloat(document.getElementById('populationTimeT').value);
+            const popTn = parseFloat(document.getElementById('populationTimeTn').value);
+            
+            if (isNaN(popT) || isNaN(popTn) || popT === 0) {
+                alert('Please enter valid population numbers');
+                return;
+            }
+            
+            const survivorship = popTn / popT;
+            document.getElementById('survivorshipResult').textContent = `${survivorship.toFixed(4)}`;
+        }
+
+        function generateDemographicReport() {
+            const title = document.getElementById('reportTitle').value || 'Demographic Analysis Report';
+            const date = document.getElementById('analysisDate').value || new Date().toISOString().split('T')[0];
+            
+            // This would generate a PDF report using jsPDF
+            // For demonstration, we'll show an alert
+            alert(`Generating PDF report: "${title}" for date ${date}`);
+            
+            // In a real implementation, you would use jsPDF to create a comprehensive report
+            // including all calculated indicators, charts, and analysis results
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date as default
+            document.getElementById('analysisDate').value = new Date().toISOString().split('T')[0];
+            
+            // Set up pyramid type change handler
+            document.getElementById('pyramidType').addEventListener('change', function() {
+                const uploadDiv = document.getElementById('pyramidUpload');
+                if (this.value === 'custom') {
+                    uploadDiv.classList.remove('hidden');
+                } else {
+                    uploadDiv.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
